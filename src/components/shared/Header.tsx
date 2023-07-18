@@ -8,9 +8,13 @@ const Header = () => {
         <Link to="/" className="text-xl font-bold">
           House Hunter.
         </Link>
-        <div>
+        <div className="flex items-center gap-5">
           <Link className="hover:underline underline-offset-2" to="/login">
             Login
+          </Link>
+
+          <Link className="hover:underline underline-offset-2" to="/register">
+            Register
           </Link>
         </div>
       </Container>

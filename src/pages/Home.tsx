@@ -7,6 +7,7 @@ import RangeSlider from "react-range-slider-input"
 import "react-range-slider-input/dist/style.css"
 import { useState } from "react"
 import HousePaginator from "../components/HousePaginator"
+import { Link } from "react-router-dom"
 
 const Home = () => {
   const [priceRange, setPriceRange] = useState([0, 100])
@@ -30,12 +31,18 @@ const Home = () => {
             </p>
 
             <div className="flex items-center gap-3 mt-5">
-              <button className="px-5 py-3 font-semibold text-white bg-black rounded-md">
-                Learn More
-              </button>
-              <button className="px-5 py-3 rounded-md font-semibold border-[3px]">
+              <Link
+                to="login"
+                className="px-5 py-3 font-semibold text-white bg-black rounded-md"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register?role=owner"
+                className="px-5 py-3 rounded-md font-semibold border-[3px]"
+              >
                 Become owner
-              </button>
+              </Link>
             </div>
           </div>
         </Container>
