@@ -7,6 +7,9 @@ import { useSearchParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import toast from "react-hot-toast"
+import { API_BASE } from "../config"
+import { ApiResponse } from "../types"
 
 type Roles = "customer" | "owner"
 
@@ -34,6 +37,7 @@ const Register = () => {
   const [params] = useSearchParams()
 
   const {
+    reset,
     register,
     handleSubmit,
     setValue,
@@ -42,8 +46,29 @@ const Register = () => {
     resolver: zodResolver(RegistrationSchema),
   })
 
-  const submitHandler = (values: RegistrationType) => {
-    console.log(values)
+  const submitHandler = async (values: RegistrationType) => {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+
+    if (!response.ok) {
+      return toast.error("Something wen't wrong please try again")
+    }
+
+    const data = (await response.json()) as ApiResponse
+    if (data.status === "error") {
+      return toast.error(data.message)
+    }
+
+    if (data.status === "success") {
+      toast.success(data.message)
+      reset()
+      return
+    }
   }
 
   useEffect(() => {
