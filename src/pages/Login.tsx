@@ -6,17 +6,24 @@ import Main from "../components/layouts/main"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { API_BASE } from "../config"
+import toast from "react-hot-toast"
+import { ApiResponse } from "../types"
+import { useNavigate } from "react-router-dom"
 
 const LoginSchema = z.object({
-  email: z.string().email({ message: "must be a valid email" }),
+  email: z
+    .string({ required_error: "email is required" })
+    .email({ message: "must be a valid email" }),
   password: z
-    .string()
-    .min(8, { message: "password must be atleast 8 character long" }),
+    .string({ required_error: "password is required" })
+    .min(1, { message: "password is required" }),
 })
 
 type LoginType = z.infer<typeof LoginSchema>
 
 const Login = () => {
+  const navigate = useNavigate()
   const [showPass, setShowPass] = useState<boolean>(false)
   const {
     register,
@@ -26,8 +33,39 @@ const Login = () => {
     resolver: zodResolver(LoginSchema),
   })
 
-  const submitHandler = (values: LoginType) => {
-    console.log(values)
+  const submitHandler = async (values: LoginType) => {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+
+    if (!response.ok) {
+      return toast.error("Something wen't wrong please try again")
+    }
+
+    const data = (await response.json()) as ApiResponse & {
+      accessToken: string
+      role: "customer" | "owner"
+    }
+    if (data.status === "error") {
+      return toast.error(data.message)
+    }
+
+    if (data.status === "success") {
+      localStorage.setItem("accessToken", data.accessToken)
+      console.log(data)
+
+      if (data.role == "owner") {
+        toast.success("Logged in as owner")
+        return navigate("/dashboard/owner")
+      } else {
+        toast.success("Logged in as customer")
+        return navigate("/")
+      }
+    }
   }
 
   useEffect(() => {
