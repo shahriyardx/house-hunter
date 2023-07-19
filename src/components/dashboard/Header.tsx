@@ -21,12 +21,7 @@ const Header = () => {
           >
             Bookings
           </Link>
-          <Link
-            className="hover:underline underline-offset-2"
-            to={`/dashboard/${decodedToken?.role as string}/add-new-house`}
-          >
-            Add New House
-          </Link>
+
           <button
             onClick={() => {
               localStorage.removeItem("accessToken")
@@ -37,6 +32,13 @@ const Header = () => {
           >
             Logout
           </button>
+
+          <Link
+            className="px-3 py-2 text-white bg-indigo-500 rounded-md hover:underline underline-offset-2"
+            to={`/dashboard/${decodedToken?.role as string}/add-new-house`}
+          >
+            Add New House
+          </Link>
         </div>
       </Container>
     </div>
