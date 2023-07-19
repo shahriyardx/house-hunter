@@ -1,18 +1,22 @@
 import { useForm } from "react-hook-form"
-import Container from "../../../components/layouts/container"
-import OwnerDashboardLayout from "../../../components/layouts/dashboard.owner"
 import toast from "react-hot-toast"
 import { API_BASE } from "../../../config"
 import { ApiResponse } from "../../../types"
+import { useQuery } from "react-query"
+import { HousesResponse } from "./OwnerDashboard"
+import { useParams } from "react-router-dom"
+import { useEffect } from "react"
+import OwnerDashboardLayout from "../../../components/layouts/dashboard.owner"
+import Container from "../../../components/layouts/container"
 
 type HouseInputType = {
   name: string
   address: string
   city: string
-  room_size: number
+  room_size: string
   bedrooms: number
   bathrooms: number
-  availability_date: Date
+  availability_date: string
   rent: number
   contact_number: string
   description: string
@@ -23,7 +27,7 @@ type HouseInputPayload = {
   name: string
   address: string
   city: string
-  room_size: number
+  room_size: string
   bedrooms: number
   bathrooms: number
   availability_date: string
@@ -33,7 +37,21 @@ type HouseInputPayload = {
   image_url: string
 }
 
-const AddNewHouse = () => {
+const EditHouse = () => {
+  const params = useParams()
+
+  const { data } = useQuery<{ success: string; data: HousesResponse }>({
+    queryKey: `owner_houses_${params.houseId as string}`,
+    queryFn: () =>
+      fetch(`${API_BASE}/owner/house/${params.houseId as string}`, {
+        headers: {
+          authorization: `Bearer ${
+            localStorage.getItem("accessToken") as string
+          }`,
+        },
+      }).then((response) => response.json()),
+  })
+
   const {
     reset,
     register,
@@ -41,29 +59,47 @@ const AddNewHouse = () => {
     formState: { errors },
   } = useForm<HouseInputType>({})
 
+  useEffect(() => {
+    if (data && data.data) {
+      const date = new Date(data.data.availability_date)
+      const avail_date = `${date.getFullYear()}-${
+        date.getMonth() + 1 >= 10
+          ? date.getMonth() + 1
+          : `0${date.getMonth() + 1}`
+      }-${date.getDate()}`
+
+      reset({
+        ...data.data,
+        availability_date: avail_date,
+      })
+    }
+  }, [data, reset])
+
   const submitHandler = async (values: HouseInputType) => {
-    if (values.image) {
-      const { image, ...data } = values
+    let image_url
+    if (values.image.length > 0) {
+      const { image } = values
       const file = image[0]
-      const image_url = await uploadImage(file)
+      image_url = await uploadImage(file)
 
       if (!image_url) {
         return toast.error("Image uploading failed please try again")
       }
+    }
 
-      console.log(values.availability_date)
+    const finalData: HouseInputPayload = {
+      ...values,
+      image_url: image_url || (data?.data.image_url as string),
+      bedrooms: Number(values.bedrooms),
+      bathrooms: Number(values.bathrooms),
+      rent: Number(values.rent),
+      availability_date: String(values.availability_date),
+    }
 
-      const finalData: HouseInputPayload = {
-        ...data,
-        image_url,
-        bedrooms: Number(values.bedrooms),
-        bathrooms: Number(values.bathrooms),
-        rent: Number(values.rent),
-        availability_date: String(values.availability_date),
-      }
-      console.log(finalData)
-      const response = await fetch(`${API_BASE}/owner/house/add`, {
-        method: "POST",
+    const response = await fetch(
+      `${API_BASE}/owner/house/edit/${params.houseId as string}`,
+      {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           authorization: `Bearer ${
@@ -71,20 +107,18 @@ const AddNewHouse = () => {
           }`,
         },
         body: JSON.stringify(finalData),
-      })
-
-      if (!response.ok) {
-        return toast.error("Something went wrong")
       }
+    )
 
-      const api_data = (await response.json()) as ApiResponse
-      console.log(api_data)
-      if (api_data.status === "success") {
-        reset()
-        toast.success(api_data.message)
-      } else {
-        toast.error(api_data.message)
-      }
+    if (!response.ok) {
+      return toast.error("Something went wrong")
+    }
+
+    const api_data = (await response.json()) as ApiResponse
+    if (api_data.status === "success") {
+      toast.success(api_data.message)
+    } else {
+      toast.error(api_data.message)
     }
   }
 
@@ -309,13 +343,7 @@ const AddNewHouse = () => {
 
           <div className="flex flex-col gap-1">
             <label>House Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register("image", {
-                required: { value: true, message: "please select an image" },
-              })}
-            />
+            <input type="file" accept="image/*" {...register("image")} />
             <span className="text-sm text-red-500">
               {errors?.image?.message}
             </span>
@@ -323,7 +351,7 @@ const AddNewHouse = () => {
 
           <div>
             <button className="px-5 py-3 text-white bg-green-600 rounded-md">
-              Add House
+              Update
             </button>
           </div>
         </form>
@@ -332,4 +360,4 @@ const AddNewHouse = () => {
   )
 }
 
-export default AddNewHouse
+export default EditHouse

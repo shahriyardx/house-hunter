@@ -4,7 +4,7 @@ import OwnerDashboardLayout from "../../../components/layouts/dashboard.owner"
 import { API_BASE } from "../../../config"
 import { Link } from "react-router-dom"
 
-type HousesResponse = {
+export type HousesResponse = {
   _id: string
   name: string
   address: string
@@ -16,10 +16,10 @@ type HousesResponse = {
   contact_number: string
   image_url: string
   availability_date: string
-}[]
+}
 
 const OwnerDashboard = () => {
-  const { data, isLoading } = useQuery<HousesResponse>({
+  const { data } = useQuery<HousesResponse[]>({
     queryKey: "owner_houses",
     queryFn: () =>
       fetch(`${API_BASE}/owner/house/all`, {
@@ -30,8 +30,6 @@ const OwnerDashboard = () => {
         },
       }).then((response) => response.json()),
   })
-
-  console.log(data, isLoading)
 
   return (
     <OwnerDashboardLayout>
