@@ -1,4 +1,5 @@
-import { useJwt } from "react-jwt"
+import jwtDecode from "jwt-decode"
+import { useCallback, useEffect, useState } from "react"
 
 type UserPayload = {
   name: string
@@ -7,14 +8,31 @@ type UserPayload = {
 }
 
 const useUser = () => {
-  const { decodedToken, isExpired, reEvaluateToken } =
-    useJwt<UserPayload | null>(localStorage.getItem("accessToken") || "")
+  const token = localStorage.getItem("accessToken") || ""
+  const [data, setData] = useState<UserPayload | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+
+  const getTokenData = useCallback(() => {
+    setLoading(true)
+    try {
+      const data = jwtDecode(token)
+      setLoading(false)
+      return data as UserPayload
+    } catch {
+      setLoading(false)
+      return null
+    }
+  }, [token])
+
+  useEffect(() => {
+    setData(getTokenData())
+  }, [getTokenData])
 
   const refetch = () => {
-    reEvaluateToken(localStorage.getItem("accessToken") || "")
+    setData(getTokenData())
   }
 
-  return { decodedToken, isExpired, reEvaluateToken: refetch }
+  return { decodedToken: data, reEvaluateToken: refetch, loading }
 }
 
 export default useUser

@@ -8,8 +8,11 @@ import "react-range-slider-input/dist/style.css"
 import { useState } from "react"
 import HousePaginator from "../components/HousePaginator"
 import { Link } from "react-router-dom"
+import useUser from "../components/hooks/useUser"
 
 const Home = () => {
+  const { decodedToken } = useUser()
+
   const [priceRange, setPriceRange] = useState([0, 100])
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -31,18 +34,29 @@ const Home = () => {
             </p>
 
             <div className="flex items-center gap-3 mt-5">
-              <Link
-                to="login"
-                className="px-5 py-3 font-semibold text-white bg-black rounded-md"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register?role=owner"
-                className="px-5 py-3 rounded-md font-semibold border-[3px]"
-              >
-                Become owner
-              </Link>
+              {decodedToken ? (
+                <Link
+                  to={`/dashboard/${decodedToken.role}`}
+                  className="px-5 py-3 font-semibold text-white bg-black rounded-md"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="login"
+                    className="px-5 py-3 font-semibold text-white bg-black rounded-md"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register?role=owner"
+                    className="px-5 py-3 rounded-md font-semibold border-[3px]"
+                  >
+                    Become owner
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </Container>
