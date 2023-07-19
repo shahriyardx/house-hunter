@@ -1,11 +1,34 @@
+import toast from "react-hot-toast"
+import { API_BASE } from "../../config"
 import { HousesResponse } from "../../pages/dashboard/owner/OwnerDashboard"
 import useUser from "../hooks/useUser"
 import Bathroom from "./Bathroom"
 import Bedroom from "./Bedroom"
 import Price from "./Price"
+import { ApiResponse } from "../../types"
 
 const Homeinfo = ({ house }: { house: HousesResponse }) => {
   const { decodedToken } = useUser()
+
+  const bookHouse = (id: string) => {
+    fetch(`${API_BASE}/renter/book/${id}`, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${
+          localStorage.getItem("accessToken") as string
+        }`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data: ApiResponse) => {
+        if (data.status == "success") {
+          toast.success(data.message)
+        } else {
+          toast.error(data.message)
+        }
+      })
+      .catch(() => toast.error("Something wen't wrong please try again"))
+  }
 
   return (
     <article className="grid grid-cols-[300px,auto] gap-7 p-7 border-2 rounded-2xl">
@@ -30,7 +53,10 @@ const Homeinfo = ({ house }: { house: HousesResponse }) => {
 
           <div>
             {decodedToken?.role === "customer" && (
-              <button className="px-5 py-3 mt-3 text-white bg-black rounded-md">
+              <button
+                onClick={() => bookHouse(house._id)}
+                className="px-5 py-3 mt-3 text-white bg-black rounded-md"
+              >
                 Rent Now
               </button>
             )}
