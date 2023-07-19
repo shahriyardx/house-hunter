@@ -6,12 +6,14 @@ import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard"
 import AddNewHouse from "./pages/dashboard/owner/AddNewHouse"
 import EditHouse from "./pages/dashboard/owner/EditHouse"
 import CustomerDashboard from "./pages/dashboard/customer/CustomerDashboard"
+import OwnerBookings from "./pages/dashboard/owner/Bookings"
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/dashboard/owner", element: <OwnerDashboard /> },
+  { path: "/dashboard/owner/bookings", element: <OwnerBookings /> },
   { path: "/dashboard/owner/house/edit/:houseId", element: <EditHouse /> },
   { path: "/dashboard/owner/add-new-house", element: <AddNewHouse /> },
   { path: "/dashboard/customer", element: <CustomerDashboard /> },
