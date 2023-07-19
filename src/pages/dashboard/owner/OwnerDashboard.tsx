@@ -3,6 +3,8 @@ import Container from "../../../components/layouts/container"
 import OwnerDashboardLayout from "../../../components/layouts/dashboard.owner"
 import { API_BASE } from "../../../config"
 import { Link } from "react-router-dom"
+import toast from "react-hot-toast"
+import { ApiResponse } from "../../../types"
 
 export type HousesResponse = {
   _id: string
@@ -19,7 +21,7 @@ export type HousesResponse = {
 }
 
 const OwnerDashboard = () => {
-  const { data } = useQuery<HousesResponse[]>({
+  const { data, refetch } = useQuery<HousesResponse[]>({
     queryKey: "owner_houses",
     queryFn: () =>
       fetch(`${API_BASE}/owner/house/all`, {
@@ -31,17 +33,33 @@ const OwnerDashboard = () => {
       }).then((response) => response.json()),
   })
 
+  const deleteHouse = (id: string) => {
+    const con = confirm("Are you sure?")
+    if (!con) return
+
+    fetch(`${API_BASE}/owner/house/${id}`, {
+      method: "DELETE",
+      headers: {
+        authorization: `Bearer ${
+          localStorage.getItem("accessToken") as string
+        }`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data: ApiResponse) => {
+        if (data.status === "success") {
+          void refetch()
+          toast.success(data.message)
+        } else {
+          toast.error(data.message)
+        }
+      })
+      .catch(() => toast.error("Something went wrong"))
+  }
+
   return (
     <OwnerDashboardLayout>
       <Container>
-        <div className="grid grid-cols-2 gap-5">
-          <div className="p-10 border-2 rounded-md shadow-md">
-            Total House: 1
-          </div>
-
-          <div className="p-10 border-2 rounded-md shadow-md">Bookings: 1</div>
-        </div>
-
         <div className="mt-10">
           <table className="w-full">
             <thead className="text-white bg-black">
@@ -75,7 +93,10 @@ const OwnerDashboard = () => {
                           >
                             Edit
                           </Link>
-                          <button className="px-3 py-2 text-white bg-red-600 rounded-md">
+                          <button
+                            onClick={() => deleteHouse(house._id)}
+                            className="px-3 py-2 text-white bg-red-600 rounded-md"
+                          >
                             Delete
                           </button>
                         </div>

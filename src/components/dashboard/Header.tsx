@@ -9,10 +9,10 @@ const Header = () => {
   return (
     <div>
       <Container className="flex items-center justify-between gap-5 py-10">
-        <div className="flex flex-col">
+        <Link to="/dashboard/owner" className="flex flex-col">
           <span className="flex flex-col text-3xl font-bold">Dashboard</span>
           <span>House Hunter.</span>
-        </div>
+        </Link>
 
         <div className="flex items-center gap-5">
           <Link
