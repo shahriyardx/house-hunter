@@ -1,9 +1,9 @@
 import { useQuery } from "react-query"
-import CustomerHeader from "../../../components/dashboard/CustomerHeader"
 import { ApiResponse } from "../../../types"
 import { API_BASE } from "../../../config"
 import Container from "../../../components/layouts/container"
 import toast from "react-hot-toast"
+import OwnerDashboardLayout from "../../../components/layouts/dashboard.owner"
 
 const OwnerBookings = () => {
   const { data, refetch } = useQuery<
@@ -46,8 +46,7 @@ const OwnerBookings = () => {
   }
 
   return (
-    <div>
-      <CustomerHeader />
+    <OwnerDashboardLayout>
       <Container className="my-10">
         <h1 className="py-10 text-4xl font-extrabold text-center">Bookings</h1>
         <table className="w-full">
@@ -79,7 +78,7 @@ const OwnerBookings = () => {
           </tbody>
         </table>
       </Container>
-    </div>
+    </OwnerDashboardLayout>
   )
 }
 

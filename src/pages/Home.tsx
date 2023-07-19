@@ -24,14 +24,12 @@ const Home = () => {
   const { data, isLoading } = useQuery<
     ApiResponse & { data: { houses: HousesResponse[]; totalHouses: number } }
   >({
-    queryKey: ["houses", searchQuery],
+    queryKey: ["houses", searchQuery, currentPage],
     queryFn: () =>
       fetch(`${API_BASE}/houses?query=${searchQuery}&page=${currentPage}`).then(
         (response) => response.json()
       ),
   })
-  const totalPages = Math.ceil(perPage / (data ? data.data.totalHouses : 10))
-
   const houses = data ? data.data.houses : []
   const cities = [...new Set(houses.map((house) => house.city))]
   const bedrooms = [...new Set(houses.map((house) => house.bedrooms))]
@@ -59,6 +57,9 @@ const Home = () => {
   const housesToShow = bathFiltertedHouses.filter(
     (houses) => houses.rent >= priceRange[0] && houses.rent <= priceRange[1]
   )
+
+  const totalPages = Math.ceil((data ? data.data.totalHouses : 10) / perPage)
+
   useEffect(() => {
     setPriceRange([0, maxPrice])
   }, [maxPrice])
@@ -148,6 +149,7 @@ const Home = () => {
               <div className="flex flex-col gap-1">
                 <span>City</span>
                 <select onChange={(e) => setSelectedCity(e.target.value)}>
+                  <option value="">Select City</option>
                   {cities.map((city) => (
                     <option key={city} value={city}>
                       {city}
@@ -159,6 +161,16 @@ const Home = () => {
               <div className="flex flex-col gap-1">
                 <span>Bedrooms</span>
                 <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="bedrooms"
+                      id="nobed"
+                      value=""
+                      onChange={() => setSelectedBedCount(0)}
+                    />
+                    <label htmlFor="nobed">No filter</label>
+                  </div>
                   {bedrooms.map((room, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <input
@@ -181,6 +193,17 @@ const Home = () => {
               <div className="flex flex-col gap-1">
                 <span>Bathrooms</span>
                 <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="bathrooms"
+                      id="nobath"
+                      value=""
+                      onChange={() => setSelectedBathCount(0)}
+                    />
+                    <label htmlFor="nobath">No filter</label>
+                  </div>
+
                   {bathrooms.map((room, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <input
@@ -214,7 +237,7 @@ const Home = () => {
               ))}
             </div>
 
-            {!isLoading && houses.length > perPage && (
+            {!isLoading && data && data.data.totalHouses > perPage && (
               <div className="mt-5">
                 <HousePaginator
                   pages={totalPages}
