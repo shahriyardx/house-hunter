@@ -18,6 +18,7 @@ export type HousesResponse = {
   contact_number: string
   image_url: string
   availability_date: string
+  description: string
 }
 
 const OwnerDashboard = () => {

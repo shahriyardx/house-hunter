@@ -5,7 +5,11 @@ type Props = {
 }
 
 const HousePaginator = ({ pages, currentPage, onChange }: Props) => {
-  const pagesNumber = Array.from({ length: pages }, (_, i) => i + 1)
+  console.log(pages)
+  const pagesNumber = Array.from(
+    { length: pages >= 1 ? pages : 1 },
+    (_, i) => i + 1
+  )
 
   const callback = (value: number) => {
     if (onChange) onChange(value)
