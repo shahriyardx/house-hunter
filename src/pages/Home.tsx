@@ -75,10 +75,17 @@ const Home = () => {
           </div>
           <div className="flex flex-col justify-center">
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Asperiores eum libero delectus magnam reiciendis atque obcaecati
-              molestias, id labore veniam? Quis esse architecto ipsum, dolorum
-              nostrum odit illum obcaecati magni.
+              "Find your perfect home with ease on our house renting website.
+              Discover a wide range of rental properties to suit your lifestyle
+              and budget, from cozy apartments to spacious family homes. Our
+              user-friendly platform allows you to search and filter through a
+              vast selection of properties, with detailed descriptions and
+              high-quality images to help you make an informed decision. With
+              our secure and hassle-free rental process, you can relax knowing
+              that we prioritize your safety and satisfaction. Whether you're a
+              student, young professional, or family, we have something for
+              everyone. Join our community and start your journey to your dream
+              home today!
             </p>
 
             <div className="flex items-center gap-3 mt-5">

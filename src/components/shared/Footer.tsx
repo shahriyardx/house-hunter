@@ -10,10 +10,8 @@ const Footer = () => {
       <Container className="flex flex-col items-center py-20 ">
         <h1 className="text-4xl font-extrabold">House Hunter</h1>
         <p className="mt-2 max-w-[65ch] text-center">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officiis
-          labore, necessitatibus magni, omnis, expedita officia aut iure quidem
-          nostrum odio sint cupiditate minus obcaecati ducimus assumenda cum
-          quisquam aliquid aperiam.
+          Discover your dream rental home with ease on our user-friendly
+          platform. Safe, hassle-free, and tailored to your needs
         </p>
 
         <div className="flex items-center gap-3 mt-5">
